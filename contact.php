@@ -1,32 +1,41 @@
 <?php
-$host = 'localhost';
-$dbname = 'contacts';
-$username = 'root';
-$password = '8AdnLvnMxn8!';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use Dotenv\Dotenv;
+
+require 'vendor/autoload.php';
+
+// Uploading variables from .env file
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// PHPMailer configuration
+$mail = new PHPMailer(true);
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    echo "Connected to $dbname at $host successfully.";
-} catch (PDOException $pe) {
-    die("Could not connect to the database $dbname :" . $pe->getMessage());
-}
+    // SMTP server settings
+    $mail->isSMTP();
+    $mail->Host = $_ENV['SMTP_HOST'];
+    $mail->SMTPAuth = true;
+    $mail->Username = $_ENV['SMTP_USERNAME'];
+    $mail->Password = $_ENV['SMTP_PASSWORD'];
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = $_ENV['SMTP_PORT'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    // Expedition and reception of the email
+    $mail->setFrom($_ENV['SMTP_FROM_EMAIL'], $_ENV['SMTP_FROM_NAME']);
+    $mail->addAddress('destinataire@example.com');
 
-    $name = $data['name'] ?? '';
-    $email = $data['email'] ?? '';
-    $message = $data['message'] ?? '';
-    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    // Email content
+    $mail->isHTML(true);
+    $mail->Subject = 'Nouveau message de contact';
+    $mail->Body    = 'Voici le message de contact...';
 
-    $sql = "INSERT INTO contact (name, email, message, ip, created_at) VALUES (:name, :email, :message, :ip, NOW())";
-    $stmt = $conn->prepare($sql);
-
-    try {
-        $stmt->execute(['name' => $name, 'email' => $email, 'message' => $message, 'ip' => $ip]);
-        echo "Merci, votre message a bien été envoyé.";
-    } catch (PDOException $pe) {
-        die("Could not send message: " . $pe->getMessage());
-    }
+    // Sending the email
+    $mail->send();
+    echo 'Votre message a bien été envoyé !';
+} catch (Exception $e) {
+    echo "Erreur lors de l'envoi du message : {$mail->ErrorInfo}";
 }
 ?>
