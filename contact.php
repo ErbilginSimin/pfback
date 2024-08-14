@@ -12,14 +12,14 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $data = json_decode(file_get_contents('php://input'), true);
+    $data = json_decode(file_get_contents('php://input'), true);
 
     $name = $data['name'] ?? '';
     $email = $data['email'] ?? '';
     $message = $data['message'] ?? '';
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
 
-    $sql = "INSERT INTO contact (name, email, message, ip, created_at) VALUES (:name, :email, :message. :ip, NOW())";
+    $sql = "INSERT INTO contact (name, email, message, ip, created_at) VALUES (:name, :email, :message, :ip, NOW())";
     $stmt = $conn->prepare($sql);
 
     try {
@@ -29,5 +29,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Could not send message: " . $pe->getMessage());
     }
 }
-
 ?>
