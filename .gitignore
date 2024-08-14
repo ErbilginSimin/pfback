@@ -1,0 +1,36 @@
+# Composer dependencies
+/vendor/
+
+# Cache, logs, et sessions
+/cache/
+logs/
+sessions/
+
+# Configurations environnementales
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Directories for temporary files
+/tmp/
+temp/
+
+# IDE settings
+.idea/
+.vscode/
+
+# Symfony specific
+/public/uploads/
+var/
+bin/
+!bin/console
+
+# Laravel specific
+/storage/
+bootstrap/cache/
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
